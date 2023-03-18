@@ -1,0 +1,39 @@
+name: Automatically periodically update the response codes for the services
+
+on:
+  schedule:
+    - cron: 0 * * * *
+
+jobs:
+  ci-update:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Install the dependency packages
+        run: |
+             sudo dnf install curl --assumeyes
+      - name: Configure Git before starting off with any Git related operations
+        run: |
+             git config --global --add safe.directory $(realpath .)
+             git config --global user.email ${{ secrets.USERMAIL }}
+             git config --global user.name ${{ secrets.USERNAME }}
+      - name: Clone the project repository in its current state
+        run: |
+             git clone https://${{ secrets.GTHBUSER }}:${{ secrets.GHBTOKEN }}@github.com/t0xic0der/gostatus.git /__w/gostatus/gostatus
+             cd /__w/gostatus/gostatus/ && git checkout test
+      - name: Generate a status record of response codes for the services
+        run: |
+             cd /__w/gostatus/gostatus && sh test/http-resp.sh
+             ls -lha
+      - name: Pull the most recently made changes before moving in the modified files
+        run: |
+             git pull origin test
+      - name: Copy over the file to the project directory
+        run: |
+             mv /var/tmp/resp/* /__w/gostatus/gostatus/rcrd/data/resp/*
+      - name: Commit the changes to the local repository
+        run: |
+             git commit -asm "$(date +%Y%m%d-%H%M%Z): Update status record for response codes"
+      - name: Push the new changes to the remote repository
+        run: |
+             git push origin test
