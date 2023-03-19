@@ -38,7 +38,7 @@ jobs:
       - name: Copy over the modified files to the directory containing the local status report repository
         working-directory: /__w/gostatus/goreport
         run: |
-             mv /var/tmp/time/* time/*
+             mv /var/tmp/time/* time/
       - name: Commit the changes to the local repository
         working-directory: /__w/gostatus/goreport
         run: |
