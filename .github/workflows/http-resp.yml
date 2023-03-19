@@ -1,8 +1,10 @@
 name: Automatically periodically update the response codes for the services
 
+# Placeholder schedule makes the job run at "1200AM only in January"
+# As good as disabled for now, until further changes are made here
 on:
   schedule:
-    - cron: 0 * * * *
+    - cron: 0 0 * 1 *
 
 jobs:
   http-resp:
