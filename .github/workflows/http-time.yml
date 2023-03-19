@@ -1,4 +1,4 @@
-name: Automatically periodically update the reachability times for the services
+name: Periodically update the reachability times for the services
 
 on:
   schedule:
@@ -10,30 +10,40 @@ jobs:
     container: fedora:latest
     steps:
       - name: Install the dependency packages
+        working-directory: /
         run: |
              sudo dnf install curl git --setopt=install_weak_deps=False --assumeyes
       - name: Configure Git before starting off with any Git related operations
+        working-directory: /__w/gostatus
         run: |
              git config --global --add safe.directory $(realpath .)
              git config --global user.email ${{ secrets.USERMAIL }}
              git config --global user.name ${{ secrets.USERNAME }}
-      - name: Clone the project repository in its current state
+      - name: Clone the status worker repository in its current state
+        working-directory: /__w/gostatus
         run: |
-             git clone https://${{ secrets.GTHBUSER }}:${{ secrets.GHBTOKEN }}@github.com/t0xic0der/gostatus.git /__w/gostatus/gostatus
-             cd /__w/gostatus/gostatus/ && git checkout test
+             git clone https://${{ secrets.GTHBUSER }}:${{ secrets.GHBTOKEN }}@github.com/t0xic0der/gostatus.git goworker
+      - name: Clone the status report repository in its current state
+        working-directory: /__w/gostatus
+        run: |
+             git clone https://${{ secrets.GTLBUSER }}:${{ secrets.GLBTOKEN }}@gitlab.com/t0xic0der/gostatus.git goreport
       - name: Generate a status record of reachability times for the services
+        working-directory: /__w/gostatus/goworker
         run: |
-             cd /__w/gostatus/gostatus && sh test/http-time.sh
-             ls -lha
-      - name: Pull the most recently made changes before moving in the modified files
+             sh test/http-time.sh
+      - name: Pull the most recently made changes from the status worker repository before moving in the modified files
+        working-directory: /__w/gostatus/goreport
         run: |
-             git pull origin test
-      - name: Copy over the file to the project directory
+             git pull origin main
+      - name: Copy over the modified files to the directory containing the local status report repository
+        working-directory: /__w/gostatus/goreport
         run: |
-             mv /var/tmp/time/* /__w/gostatus/gostatus/rcrd/data/time/*
+             mv /var/tmp/time/* time/*
       - name: Commit the changes to the local repository
+        working-directory: /__w/gostatus/goreport
         run: |
              git commit -asm "$(date +%Y%m%d-%H%M%Z): Update status record for reachability times"
       - name: Push the new changes to the remote repository
+        working-directory: /__w/gostatus/goreport
         run: |
-             git push origin test
+             git push origin main
