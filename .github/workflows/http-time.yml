@@ -42,7 +42,8 @@ jobs:
       - name: Commit the changes to the local repository
         working-directory: /__w/gostatus/goreport
         run: |
-             git commit -asm "$(date +%Y%m%d-%H%M%Z): Update status record for reachability times"
+             git add time/
+             git commit -sm "$(date +%Y%m%d-%H%M%Z): Update status record for reachability times"
       - name: Push the new changes to the remote repository
         working-directory: /__w/gostatus/goreport
         run: |
