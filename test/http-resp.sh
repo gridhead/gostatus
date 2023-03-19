@@ -2,7 +2,7 @@
 
 sbprefix="https://"
 httplist="list/http.list"
-resppage="rcrd/page/resp.page"
+resppage="page/resp.page"
 respdrct="/var/tmp/resp"
 
 echo "[$(date +%Y%m%d-%H%M%S%Z)] Starting status checks"
