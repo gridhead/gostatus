@@ -2,7 +2,7 @@ name: Periodically update the reachability times for the services
 
 on:
   schedule:
-    - cron: 0/5 * * * *
+    - cron: 0 * * * *
 
 jobs:
   http-time:
