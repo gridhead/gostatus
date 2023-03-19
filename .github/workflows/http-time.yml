@@ -2,7 +2,7 @@ name: Automatically periodically update the reachability times for the services
 
 on:
   schedule:
-    - cron: 5 * * * *
+    - cron: 0/5 * * * *
 
 jobs:
   ci-update:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Install the dependency packages
         run: |
-             sudo dnf install curl --assumeyes
+             sudo dnf install curl git --setopt=install_weak_deps=False --assumeyes
       - name: Configure Git before starting off with any Git related operations
         run: |
              git config --global --add safe.directory $(realpath .)
