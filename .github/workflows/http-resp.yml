@@ -5,7 +5,7 @@ on:
     - cron: 0 * * * *
 
 jobs:
-  ci-update:
+  http-resp:
     runs-on: ubuntu-latest
     container: fedora:latest
     steps:
